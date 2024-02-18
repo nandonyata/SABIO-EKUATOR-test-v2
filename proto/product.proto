@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package product_grpc;
+
+option go_package= "/pb";
+
+import "proto/response.proto";
+
+message ProductReq {
+    string name = 1;
+    double price = 2;
+    int32 stock = 3;
+}
+
+service ProductService {
+    rpc CreateProduct (ProductReq) returns (ResponseMessage);
+}
