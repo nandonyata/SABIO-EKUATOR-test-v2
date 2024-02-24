@@ -3,6 +3,7 @@ module sabio-ekuator
 go 1.22.0
 
 require (
+	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.61.1
 	google.golang.org/protobuf v1.32.0
 )

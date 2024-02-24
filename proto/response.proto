@@ -5,3 +5,5 @@ option go_package= "/pb";
 message ResponseMessage {
     string message = 1;
 }
+
+// we don't use this, coz on postman idk y theres an error when i try to import the path lol

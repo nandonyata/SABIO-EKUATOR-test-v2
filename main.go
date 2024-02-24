@@ -1,7 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"net"
+	"sabio-ekuator/config"
+	"sabio-ekuator/pb"
+
+	"google.golang.org/grpc"
+)
+
+var PORT = "3000"
+
+type Server struct {
+	pb.ProductServiceServer
+}
 
 func main() {
-	fmt.Println("TEST GOLANG")
+	config.ConnectDB()
+
+	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", PORT))
+	if err != nil {
+		log.Fatalf("Err listening on port %v, %v", PORT, err)
+	}
+
+	fmt.Printf("Listening on port:%v", PORT)
+
+	grpcServer := grpc.NewServer()
+	pb.RegisterProductServiceServer(grpcServer, &Server{})
+
+	if err = grpcServer.Serve(list); err != nil {
+		log.Fatalf("Err serving:%v", err)
+	}
+
 }

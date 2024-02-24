@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
-	CreateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ResponseMessage, error)
+	CreateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ProductMsg, error)
 }
 
 type productServiceClient struct {
@@ -33,8 +33,8 @@ func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 	return &productServiceClient{cc}
 }
 
-func (c *productServiceClient) CreateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ResponseMessage, error) {
-	out := new(ResponseMessage)
+func (c *productServiceClient) CreateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ProductMsg, error) {
+	out := new(ProductMsg)
 	err := c.cc.Invoke(ctx, "/product_grpc.ProductService/CreateProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (c *productServiceClient) CreateProduct(ctx context.Context, in *ProductReq
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
-	CreateProduct(context.Context, *ProductReq) (*ResponseMessage, error)
+	CreateProduct(context.Context, *ProductReq) (*ProductMsg, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -54,7 +54,7 @@ type ProductServiceServer interface {
 type UnimplementedProductServiceServer struct {
 }
 
-func (UnimplementedProductServiceServer) CreateProduct(context.Context, *ProductReq) (*ResponseMessage, error) {
+func (UnimplementedProductServiceServer) CreateProduct(context.Context, *ProductReq) (*ProductMsg, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
