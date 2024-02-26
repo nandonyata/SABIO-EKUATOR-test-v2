@@ -9,6 +9,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s *Server) CreateProduct(ctx context.Context, req *pb.ProductReq) (*pb.ProductMsg, error) {
@@ -49,4 +50,10 @@ func (s *Server) FetchOneProduct(ctx context.Context, req *pb.ProductId) (*pb.Pr
 		Price: res.Price,
 		Stock: res.Stock,
 	}, nil
+}
+
+func (s *Server) FetchAllProduct(_ *emptypb.Empty, stream pb.ProductService_FetchAllProductServer) error {
+	fmt.Println("Fetch all product was invoked")
+
+	return nil
 }
