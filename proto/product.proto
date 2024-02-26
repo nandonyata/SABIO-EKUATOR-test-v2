@@ -16,6 +16,11 @@ message ProductMsg {
     string message = 1;
 }
 
+message ProductId {
+    int32 id = 1;
+}
+
 service ProductService {
     rpc CreateProduct (ProductReq) returns (ProductMsg);
+    rpc FetchOneProduct (ProductId) returns (ProductReq);
 }
