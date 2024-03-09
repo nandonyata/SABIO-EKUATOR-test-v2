@@ -15,6 +15,7 @@ var PORT = "3000"
 type Server struct {
 	pb.ProductServiceServer
 	pb.CustomerServiceServer
+	pb.OrderServiceServer
 }
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterProductServiceServer(grpcServer, &Server{})
 	pb.RegisterCustomerServiceServer(grpcServer, &Server{})
+	pb.RegisterOrderServiceServer(grpcServer, &Server{})
 
 	if err = grpcServer.Serve(list); err != nil {
 		log.Fatalf("Err serving:%v", err)
