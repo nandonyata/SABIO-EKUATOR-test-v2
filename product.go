@@ -77,3 +77,21 @@ func (s *Server) FetchAllProduct(_ *pb.ProductEmpty, stream pb.ProductService_Fe
 
 	return nil
 }
+
+func (s *Server) UpdateProduct(ctx context.Context, req *pb.ProductReq) (*pb.ProductMsg, error) {
+	fmt.Println("Update product was invoked with ", req)
+
+	query := `
+	UPDATE Product
+	SET name = $2, price = $3, stock = $4
+	WHERE id = $1
+	`
+
+	if _, err := config.DB.Exec(query, req.Id, req.Name, req.Price, req.Stock); err != nil {
+		return nil, status.Error(codes.Internal, "Internal Server Error")
+	}
+
+	return &pb.ProductMsg{
+		Message: "Success update",
+	}, nil
+}
