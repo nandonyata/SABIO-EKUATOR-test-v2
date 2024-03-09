@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "/pb";
+
+import "proto/product.proto";
+import "proto/customer.proto";
+
+message Order {
+    int32 id = 1;
+    int32 quantity = 2;
+    double total = 3;
+    Customer customerId = 4;
+    repeated ProductReq productId = 5;
+}
+
+message OrderId {
+    int32 id = 1;
+}
+
+message OrderMessage {
+    string message = 1;
+}
+
+message OrderEmpty {}
+
+service OrderService {
+    rpc CreateOrder (Order) returns (OrderMessage);
+    rpc FetchOneOrder (OrderId) returns (Order);
+    rpc FetchAllOrder (OrderEmpty) returns (stream Order);
+}
