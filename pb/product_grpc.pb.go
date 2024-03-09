@@ -25,6 +25,7 @@ type ProductServiceClient interface {
 	CreateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ProductMsg, error)
 	FetchOneProduct(ctx context.Context, in *ProductId, opts ...grpc.CallOption) (*ProductReq, error)
 	FetchAllProduct(ctx context.Context, in *ProductEmpty, opts ...grpc.CallOption) (ProductService_FetchAllProductClient, error)
+	UpdateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ProductMsg, error)
 }
 
 type productServiceClient struct {
@@ -85,6 +86,15 @@ func (x *productServiceFetchAllProductClient) Recv() (*ProductReq, error) {
 	return m, nil
 }
 
+func (c *productServiceClient) UpdateProduct(ctx context.Context, in *ProductReq, opts ...grpc.CallOption) (*ProductMsg, error) {
+	out := new(ProductMsg)
+	err := c.cc.Invoke(ctx, "/product_grpc.ProductService/UpdateProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
@@ -92,6 +102,7 @@ type ProductServiceServer interface {
 	CreateProduct(context.Context, *ProductReq) (*ProductMsg, error)
 	FetchOneProduct(context.Context, *ProductId) (*ProductReq, error)
 	FetchAllProduct(*ProductEmpty, ProductService_FetchAllProductServer) error
+	UpdateProduct(context.Context, *ProductReq) (*ProductMsg, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -107,6 +118,9 @@ func (UnimplementedProductServiceServer) FetchOneProduct(context.Context, *Produ
 }
 func (UnimplementedProductServiceServer) FetchAllProduct(*ProductEmpty, ProductService_FetchAllProductServer) error {
 	return status.Errorf(codes.Unimplemented, "method FetchAllProduct not implemented")
+}
+func (UnimplementedProductServiceServer) UpdateProduct(context.Context, *ProductReq) (*ProductMsg, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
@@ -178,6 +192,24 @@ func (x *productServiceFetchAllProductServer) Send(m *ProductReq) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _ProductService_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).UpdateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/product_grpc.ProductService/UpdateProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).UpdateProduct(ctx, req.(*ProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +224,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchOneProduct",
 			Handler:    _ProductService_FetchOneProduct_Handler,
+		},
+		{
+			MethodName: "UpdateProduct",
+			Handler:    _ProductService_UpdateProduct_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

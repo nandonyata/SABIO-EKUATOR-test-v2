@@ -11,6 +11,7 @@ message ProductReq {
     string name = 1;
     double price = 2;
     int32 stock = 3;
+    int32 id = 4;
 }
 
 message ProductMsg {
@@ -27,4 +28,5 @@ service ProductService {
     rpc CreateProduct (ProductReq) returns (ProductMsg);
     rpc FetchOneProduct (ProductId) returns (ProductReq);
     rpc FetchAllProduct (ProductEmpty) returns (stream ProductReq);
+    rpc UpdateProduct (ProductReq) returns (ProductMsg);
 }

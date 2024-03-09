@@ -34,17 +34,18 @@ func (s *Server) FetchOneProduct(ctx context.Context, req *pb.ProductId) (*pb.Pr
 	var res entity.Product
 
 	query := `
-	SELECT name, price, stock from Product
+	SELECT name, price, stock, id from Product
 	WHERE id = $1
 	`
 
-	config.DB.QueryRow(query, req.Id).Scan(&res.Name, &res.Price, &res.Stock)
+	config.DB.QueryRow(query, req.Id).Scan(&res.Name, &res.Price, &res.Stock, &res.Id)
 
 	if res.Name == "" && res.Price == 0 && res.Stock == 0 {
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("Data not found with id %v", req.Id))
 	}
 
 	return &pb.ProductReq{
+		Id:    res.Id,
 		Name:  res.Name,
 		Price: res.Price,
 		Stock: res.Stock,
@@ -55,7 +56,7 @@ func (s *Server) FetchAllProduct(_ *pb.ProductEmpty, stream pb.ProductService_Fe
 	fmt.Println("Get all product was invoked")
 
 	query := `
-	SELECT name, price, stock FROM Product
+	SELECT name, price, stock, id FROM Product
 	ORDER BY id DESC
 	`
 
@@ -67,7 +68,7 @@ func (s *Server) FetchAllProduct(_ *pb.ProductEmpty, stream pb.ProductService_Fe
 	for row.Next() {
 		product := &entity.Product{}
 
-		if err := row.Scan(&product.Name, &product.Price, &product.Stock); err != nil {
+		if err := row.Scan(&product.Name, &product.Price, &product.Stock, &product.Id); err != nil {
 			return status.Errorf(codes.Internal, fmt.Sprintf("error scanning: %v\n", err))
 		}
 
