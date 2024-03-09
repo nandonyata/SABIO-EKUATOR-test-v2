@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package customer_grpc;
+
+option go_package="/pb";
+
+message Customer {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message CustomerMsg {
+    string message = 1;
+}
+
+message EmptyCustomer {}
+
+message CustomerId {
+    int32 id = 1;
+}
+
+service CustomerService {
+    rpc CreateCustomer(Customer) returns (CustomerMsg);
+    rpc FetchAllCustomer(EmptyCustomer) returns (stream CustomerMsg);
+    rpc FethcOneCustomer(CustomerId) returns (Customer);
+    rpc UpdateCustomer(Customer) returns (CustomerMsg);
+    rpc DeleteCustomer(CustomerId) returns (CustomerMsg);
+}
