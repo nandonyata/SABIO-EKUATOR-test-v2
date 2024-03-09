@@ -70,10 +70,31 @@ func (s *Server) FethcOneCustomer(_ context.Context, req *pb.CustomerId) (*pb.Cu
 	return entity.DocToCustomer(&cust), nil
 }
 
-func (s *Server) UpdateCustomer(context.Context, *pb.Customer) (*pb.CustomerMsg, error) {
-	return &pb.CustomerMsg{}, nil
+func (s *Server) UpdateCustomer(_ context.Context, req *pb.Customer) (*pb.CustomerMsg, error) {
+	query := `
+	UPDATE Customer
+	SET name = $2, email = $3
+	WHERE id = $1
+	`
+	_, err := config.DB.Exec(query, req.Id, req.Name, req.Email)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Err: %v\n", err))
+	}
+
+	return &pb.CustomerMsg{
+		Message: "Success update customer",
+	}, nil
 }
 
-func (s *Server) DeleteCustomer(context.Context, *pb.CustomerId) (*pb.CustomerMsg, error) {
-	return &pb.CustomerMsg{}, nil
+func (s *Server) DeleteCustomer(_ context.Context, req *pb.CustomerId) (*pb.CustomerMsg, error) {
+	query := `
+		DELETE FROM Customer
+		WHERE id = $1
+	`
+
+	config.DB.Exec(query, req.Id)
+
+	return &pb.CustomerMsg{
+		Message: "Succes delete customer",
+	}, nil
 }
