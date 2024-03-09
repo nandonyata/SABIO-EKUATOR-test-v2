@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"fmt"
 	"sabio-ekuator/pb"
 )
 
@@ -13,8 +12,6 @@ type Product struct {
 }
 
 func DocToProduct(p *Product) *pb.ProductReq {
-	fmt.Println(p, "masuk ke sini")
-
 	return &pb.ProductReq{
 		Name:  p.Name,
 		Price: p.Price,

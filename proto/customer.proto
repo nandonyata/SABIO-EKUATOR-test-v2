@@ -22,7 +22,7 @@ message CustomerId {
 
 service CustomerService {
     rpc CreateCustomer(Customer) returns (CustomerMsg);
-    rpc FetchAllCustomer(EmptyCustomer) returns (stream CustomerMsg);
+    rpc FetchAllCustomer(EmptyCustomer) returns (stream Customer);
     rpc FethcOneCustomer(CustomerId) returns (Customer);
     rpc UpdateCustomer(Customer) returns (CustomerMsg);
     rpc DeleteCustomer(CustomerId) returns (CustomerMsg);

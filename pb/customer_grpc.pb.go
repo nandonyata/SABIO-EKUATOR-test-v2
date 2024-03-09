@@ -62,7 +62,7 @@ func (c *customerServiceClient) FetchAllCustomer(ctx context.Context, in *EmptyC
 }
 
 type CustomerService_FetchAllCustomerClient interface {
-	Recv() (*CustomerMsg, error)
+	Recv() (*Customer, error)
 	grpc.ClientStream
 }
 
@@ -70,8 +70,8 @@ type customerServiceFetchAllCustomerClient struct {
 	grpc.ClientStream
 }
 
-func (x *customerServiceFetchAllCustomerClient) Recv() (*CustomerMsg, error) {
-	m := new(CustomerMsg)
+func (x *customerServiceFetchAllCustomerClient) Recv() (*Customer, error) {
+	m := new(Customer)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func _CustomerService_FetchAllCustomer_Handler(srv interface{}, stream grpc.Serv
 }
 
 type CustomerService_FetchAllCustomerServer interface {
-	Send(*CustomerMsg) error
+	Send(*Customer) error
 	grpc.ServerStream
 }
 
@@ -184,7 +184,7 @@ type customerServiceFetchAllCustomerServer struct {
 	grpc.ServerStream
 }
 
-func (x *customerServiceFetchAllCustomerServer) Send(m *CustomerMsg) error {
+func (x *customerServiceFetchAllCustomerServer) Send(m *Customer) error {
 	return x.ServerStream.SendMsg(m)
 }
 
