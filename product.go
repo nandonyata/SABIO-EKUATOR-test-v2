@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"sabio-ekuator/config"
 	"sabio-ekuator/entity"
 	"sabio-ekuator/pb"
@@ -21,7 +20,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.ProductReq) (*pb.Pro
 	`
 	_, err := config.DB.Query(query, req.Name, req.Price, req.Stock)
 	if err != nil {
-		log.Fatalf("\nErr querying create product: %v", err)
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Err querying create product: %v", err))
 	}
 
 	return &pb.ProductMsg{
@@ -29,7 +28,30 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.ProductReq) (*pb.Pro
 	}, nil
 }
 
-func (s *Server) GetAllProduct(_ *pb.ProductEmpty, stream pb.ProductService_GetAllProductServer) error {
+func (s *Server) FetchOneProduct(ctx context.Context, req *pb.ProductId) (*pb.ProductReq, error) {
+	fmt.Println("Fetch one product was invoked with ", req)
+
+	var res entity.Product
+
+	query := `
+	SELECT name, price, stock from Product
+	WHERE id = $1
+	`
+
+	config.DB.QueryRow(query, req.Id).Scan(&res.Name, &res.Price, &res.Stock)
+
+	if res.Name == "" && res.Price == 0 && res.Stock == 0 {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("Data not found with id %v", req.Id))
+	}
+
+	return &pb.ProductReq{
+		Name:  res.Name,
+		Price: res.Price,
+		Stock: res.Stock,
+	}, nil
+}
+
+func (s *Server) FetchAllProduct(_ *pb.ProductEmpty, stream pb.ProductService_FetchAllProductServer) error {
 	fmt.Println("Get all product was invoked")
 
 	query := `

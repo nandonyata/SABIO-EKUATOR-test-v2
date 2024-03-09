@@ -5,6 +5,7 @@ package product_grpc;
 option go_package= "/pb";
 
 // import "proto/response.proto";
+// import "google/protobuf/empty.proto";
 
 message ProductReq {
     string name = 1;
@@ -16,9 +17,14 @@ message ProductMsg {
     string message = 1;
 }
 
+message ProductId {
+    int32 id = 1;
+}
+
 message ProductEmpty {} // or google.protobuf.Empty
 
 service ProductService {
     rpc CreateProduct (ProductReq) returns (ProductMsg);
-    rpc GetAllProduct (ProductEmpty) returns  (stream ProductReq);
+    rpc FetchOneProduct (ProductId) returns (ProductReq);
+    rpc FetchAllProduct (ProductEmpty) returns (stream ProductReq);
 }
