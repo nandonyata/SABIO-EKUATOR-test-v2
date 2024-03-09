@@ -16,6 +16,9 @@ message ProductMsg {
     string message = 1;
 }
 
+message ProductEmpty {} // or google.protobuf.Empty
+
 service ProductService {
     rpc CreateProduct (ProductReq) returns (ProductMsg);
+    rpc GetAllProduct (ProductEmpty) returns  (stream ProductReq);
 }
