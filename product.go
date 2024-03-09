@@ -95,3 +95,20 @@ func (s *Server) UpdateProduct(ctx context.Context, req *pb.ProductReq) (*pb.Pro
 		Message: "Success update",
 	}, nil
 }
+
+func (s *Server) DeleteProduct(_ context.Context, req *pb.ProductId) (*pb.ProductMsg, error) {
+	fmt.Println("Delete product was invoked with ", req)
+
+	_, err := config.DB.Exec(`
+		DELETE FROM Product
+		WHERE id = $1
+	`, req.Id)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Error: %v\n", err))
+	}
+
+	return &pb.ProductMsg{
+		Message: "Success delete product",
+	}, nil
+}

@@ -29,4 +29,5 @@ service ProductService {
     rpc FetchOneProduct (ProductId) returns (ProductReq);
     rpc FetchAllProduct (ProductEmpty) returns (stream ProductReq);
     rpc UpdateProduct (ProductReq) returns (ProductMsg);
+    rpc DeleteProduct (ProductId) returns (ProductMsg);
 }
