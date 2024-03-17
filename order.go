@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"sabio-ekuator/config"
 	"sabio-ekuator/entity"
 	"sabio-ekuator/pb"
@@ -113,5 +114,42 @@ func (s *Server) FetchOneOrder(_ context.Context, req *pb.OrderId) (*pb.Order, e
 }
 
 func (s *Server) FetchAllOrder(_ *pb.OrderEmpty, stream pb.OrderService_FetchAllOrderServer) error {
+	query := `
+		SELECT 
+			o.id, 
+			o.quantity, 
+			o.total,
+			c.id as customer_id,
+            c.name as customer_name,
+            c.email as customer_email,
+			p.id as product_id,
+			p.name as product_name,
+			p.price as product_price,
+			p.stock as product_stock
+		FROM 
+			"order" o
+		JOIN
+			Customer c ON o.customer_id = c.id
+		JOIN
+			Product p ON o.product_id = p.id
+	`
+
+	rows, err := config.DB.Query(query)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	for rows.Next() {
+		order := entity.Order{}
+
+		err := rows.Scan(&order.Id, &order.Quantity, &order.Total, &order.Customer.Id, &order.Customer.Name, &order.Customer.Email, &order.Product.Id, &order.Product.Name, &order.Product.Price, &order.Product.Stock)
+
+		if err != nil {
+			return status.Errorf(codes.Internal, fmt.Sprintf("error scanning: %v\n", err))
+		}
+
+		stream.Send(entity.DocToOrder(&order))
+	}
+
 	return nil
 }
