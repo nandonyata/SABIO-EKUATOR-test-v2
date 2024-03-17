@@ -12,7 +12,7 @@ message Order {
     int32 quantity = 2;
     double total = 3;
     Customer customerId = 4;
-    repeated ProductReq productId = 5;
+    ProductReq productId = 5;
 }
 
 message OrderId {

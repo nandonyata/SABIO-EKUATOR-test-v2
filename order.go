@@ -14,11 +14,8 @@ import (
 
 func (s *Server) CreateOrder(_ context.Context, req *pb.Order) (*pb.OrderMessage, error) {
 
-	if len(req.ProductId) == 0 {
+	if req.ProductId == nil {
 		return nil, status.Error(codes.Aborted, "productId required")
-	}
-	if len(req.ProductId) > 1 {
-		return nil, status.Error(codes.Aborted, "Can only send 1 product id") // bcs the model order only saves 1 productId
 	}
 	if req.CustomerId == nil {
 		return nil, status.Error(codes.InvalidArgument, "customerId required")
@@ -42,7 +39,7 @@ func (s *Server) CreateOrder(_ context.Context, req *pb.Order) (*pb.OrderMessage
 	rowProduct := config.DB.QueryRow(`
 		SELECT id, price, stock FROM Product
 		WHERE id = $1
-	`, req.ProductId[0].Id)
+	`, req.ProductId.Id)
 	if err := rowProduct.Scan(&product.Id, &product.Price, &product.Stock); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Error(codes.NotFound, "Product not found")
@@ -83,6 +80,11 @@ func (s *Server) CreateOrder(_ context.Context, req *pb.Order) (*pb.OrderMessage
 }
 
 func (s *Server) FetchOneOrder(_ context.Context, req *pb.OrderId) (*pb.Order, error) {
+
+	// query := `
+	// 	SELECT
+	// `
+
 	return &pb.Order{}, nil
 }
 
