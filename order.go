@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sabio-ekuator/config"
 	"sabio-ekuator/entity"
 	"sabio-ekuator/pb"
@@ -70,7 +69,6 @@ func (s *Server) CreateOrder(_ context.Context, req *pb.Order) (*pb.OrderMessage
 	`, resultStock, product.Id)
 
 	if err != nil {
-		fmt.Println(err, "PPPP")
 		return nil, status.Error(codes.Internal, "Internal server error")
 	}
 
@@ -81,11 +79,37 @@ func (s *Server) CreateOrder(_ context.Context, req *pb.Order) (*pb.OrderMessage
 
 func (s *Server) FetchOneOrder(_ context.Context, req *pb.OrderId) (*pb.Order, error) {
 
-	// query := `
-	// 	SELECT
-	// `
+	order := entity.Order{}
+	query := `
+		SELECT 
+			o.id, 
+			o.quantity, 
+			o.total,
+			c.id as customer_id,
+            c.name as customer_name,
+            c.email as customer_email,
+			p.id as product_id,
+			p.name as product_name,
+			p.price as product_price,
+			p.stock as product_stock
+		FROM 
+			"order" o
+		JOIN
+			Customer c ON o.customer_id = c.id
+		JOIN
+			Product p ON o.product_id = p.id
+		WHERE 
+			o.id = $1
+	`
 
-	return &pb.Order{}, nil
+	row := config.DB.QueryRow(query, req.Id)
+	err := row.Scan(&order.Id, &order.Quantity, &order.Total, &order.Customer.Id, &order.Customer.Name, &order.Customer.Email, &order.Product.Id, &order.Product.Name, &order.Product.Price, &order.Product.Stock)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return entity.DocToOrder(&order), nil
 }
 
 func (s *Server) FetchAllOrder(_ *pb.OrderEmpty, stream pb.OrderService_FetchAllOrderServer) error {
